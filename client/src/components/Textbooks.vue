@@ -1,7 +1,9 @@
 <template>
   <div>
     <h1>Textbooks</h1>
-
+    <router-link to="/hello">
+      <button>Go to Other Component</button>
+    </router-link>
     <!-- Create or Posts -->
     <input type="text"
       v-model="title"
