@@ -1,16 +1,18 @@
 <script setup>
-import Textbooks from './components/Textbooks.vue'
+import Navbar from './components/shared/Navbar.vue'
 </script>
-
 <template>
-  <div>
-    
-  </div>
-  <router-view></router-view>
-  
+  <Navbar class="navbar" />
+  <b-container id="page-container">
+    <router-view></router-view>
+  </b-container>
 </template>
 
 <style scoped>
+#page-container {
+  margin: 40px;
+  display: block;
+}
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -23,4 +25,9 @@ import Textbooks from './components/Textbooks.vue'
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
 }
+
+.navbar {
+  padding-left: 10px;
+}
+
 </style>
