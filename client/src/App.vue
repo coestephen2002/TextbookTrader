@@ -6,7 +6,8 @@ import Textbooks from './components/Textbooks.vue'
   <div>
     
   </div>
-  <Textbooks />
+  <router-view></router-view>
+  
 </template>
 
 <style scoped>
