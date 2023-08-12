@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
 import router from './router'
+import store from './store'
 
 //Load JWT from Local Storage on Refresh.
 let localAuthToken = localStorage.auth_token;

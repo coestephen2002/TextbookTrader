@@ -45,7 +45,7 @@ const actions = {
         .post(`${BASE_URL}users/sign_in`, payload)
         .then((response) => {
           commit('setUserInfo', response);
-          resolve(reponse);
+          resolve(response);
         })
         .catch((error) => {
           reject(error);
