@@ -47,12 +47,14 @@
 </template>
 
 <script>
-import '../store/index.js'
 import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'SessionManager',
   computed: {
-    ...mapGetters(['getAuthToken', 'getUserEmail', 'getUserID', 'isLoggedIn']),
+    ...mapGetters('sessionManager', ['getAuthToken', 'getUserEmail', 'getUserID', 'isLoggedIn']),
+  },
+  async mounted() {
+
   },
   data() {
     return {
@@ -63,7 +65,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['registerUser', 'loginUser', 'logoutUser']),
+    ...mapActions('sessionManager', ['registerUser', 'loginUser', 'logoutUser']),
     onSignUp(event) {
       event.preventDefault()
       let data = {

@@ -2,12 +2,14 @@
   <div>
     <h2>Log In</h2>
     <label>Username:</label>
-    <input type="text"
+    <input 
+      type="text"
       v-model="email"
       placeholder="Email"
       class="email-input" />
     <label>Password:</label>
-    <input type="text"
+    <input 
+      type="text"
       v-model="password"
       placeholder="password"
       class="password-input" />

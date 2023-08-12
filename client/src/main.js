@@ -5,15 +5,18 @@ import router from './router'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import store from './store'
 
-//Load JWT from Local Storage on Refresh.
+// Load JWT from Local Storage on Refresh.
 let localAuthToken = localStorage.auth_token
 let cookieExists = localAuthToken !== 'undefined' && localAuthToken !== null
 if (cookieExists) {
   const auth_token = localStorage.getItem('auth_token')
   const auth_token_exists = auth_token !== 'undefined' && auth_token !== null
   if (auth_token_exists) {
-    store.dispatch('loginUserWithToken', { auth_token })
+    store.dispatch('sessionManager/loginUserWithToken', { auth_token }) // Assuming 'sessionManager' is the module name
   }
 }
 
-createApp(App).use(router).mount('#app')
+const app = createApp(App) // Create a new Vue app instance
+app.use(store) // Use your Vuex store instance in the app
+app.use(router) // Use your router instance
+app.mount('#app') // Mount the app to a DOM element with the id 'app'

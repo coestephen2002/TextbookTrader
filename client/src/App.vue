@@ -1,11 +1,9 @@
 <script setup>
 import Navbar from './components/shared/Navbar.vue'
-import SessionManager from './components/SessionManager.vue'
 </script>
 <template>
   <Navbar class="navbar" />
   <b-container id="page-container">
-    <SessionManager />
     <router-view></router-view>
   </b-container>
 </template>
