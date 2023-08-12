@@ -1,10 +1,12 @@
-<script setup>
+<script>
 import Textbooks from './components/Textbooks.vue'
+import SessionManager from './components/SessionManager.vue'
+
 </script>
 
 <template>
   <div>
-    
+    <SessionManager />
   </div>
   <router-view></router-view>
   
