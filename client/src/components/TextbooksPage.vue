@@ -28,109 +28,105 @@
 
     <div class="textbooks-header">
       <h1>User</h1>
-      <p>User id is: {{ getUserEmail }}</p>
+      <p>User id is: {{ getUserID }}</p>
     </div>
   </b-container>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { mapGetters } from 'vuex'
 
-const textbooks = ref([])
-const user_id = ref(this.userId())
-
-const title = ref('')
-const isbn = ref('')
-const textbook_id = ref(0)
-const isEditing = ref(false)
 const API_URL = 'http://localhost:3000/textbooks'
 
-onMounted(async() => {
-  const res = await fetch(API_URL)
-  textbooks.value = await res.json()
-})
-
-const createTextbook = async() => {
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      title: title.value,
-      isbn: isbn.value,
-      user_id: user_id.value
-    })
-  })
-
-  const data = await res.json()
-
-  textbooks.value.push(data)
-  title.value = ''
-  isbn.value = ''
-  textbook_id.value = 0
-}
-
-const updateTextbook = async() => {
-  const res = await fetch(`${API_URL}/${textbook_id.value}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      title: title.value,
-      isbn: isbn.value,
-      id: textbook_id.value
-    })
-  })
-
-  const data = await res.json()
-
-  const index = textbooks.value.findIndex(textbook => textbook.id === data.id)
-  textbooks.value[index] = data
-
-  title.value = ''
-  isbn.value = ''
-  textbook_id.value = 0
-  isEditing.value = false
-}
-
-const cancelEdit = () => {
-  title.value = ''
-  isbn.value = ''
-  textbook_id.value = 0
-  isEditing.value = false
-}
-
-const deleteTextbook = async(id) => {
-  await fetch (`${API_URL}/${id}`, {
-    method: 'DELETE'
-  })
-  textbooks.value = textbooks.value.filter(post => post.id !== id)
-}
-
-const editTextbook = async(id) => {
-  const textbook = textbooks.value.find(post => post.id === id)
-  
-  title.value = textbook.title
-  isbn.value = textbook.isbn
-  textbook_id.value = textbook.id
-  isEditing.value = true
-
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  })
-}
-
 export default {
+  name: 'TextbooksPage',
   computed: {
-    ...mapGetters('sessionManager', ['getUserID']),
-    userId() {
-      return this.getUserID
+    ... mapGetters('sessionManager', ['getUserID']),
+  },
+  async mounted() {
+    const res = await fetch(API_URL)
+    this.textbooks = await res.json()
+  },
+  data() {
+    return {
+      title: '',
+      isbn: '',
+      textbook_id: 0,
+      isEditing: false,
+      textbooks: []
     }
-  }
+  }, 
+  methods: {
+    async createTextbook() {
+        const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: this.title,
+          isbn: this.isbn,
+          user_id: this.getUserID
+        })
+      })
+
+      const data = await res.json()
+
+      this.textbooks.push(data)
+      this.title = ''
+      this.isbn = ''
+      this.textbook_id = 0
+    },
+    async updateTextbook() {
+      const res = await fetch(`${API_URL}/${this.textbook_id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: title,
+          isbn: isbn,
+          id: textbook_id
+        })
+      })
+
+      const data = await res.json()
+
+      const index = this.textbooks.findIndex(textbook => textbook.id === data.id)
+      this.textbooks[index] = data
+
+      this.title = ''
+      this.isbn = ''
+      this.textbook_id = 0
+      this.isEditing = false
+    },
+    cancelEdit() {
+      this.title = ''
+      this.isbn = ''
+      this.textbook_id = 0
+      this.isEditing = false
+    },
+    async deleteTextbook(id) {
+      await fetch (`${API_URL}/${id}`, {
+        method: 'DELETE'
+      })
+      this.textbooks = this.textbooks.filter(post => post.id !== id)
+    },
+    async editTextbook(id) {
+      const textbook = this.textbooks.find(post => post.id === id)
+      
+      this.title = textbook.title
+      this.isbn = textbook.isbn
+      this.textbook_id = textbook.id
+      this.isEditing = true
+
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+    },
+  },
 }
 </script>
 

@@ -20,7 +20,7 @@ const GETTERS = {
   getUserID(state) {
     return state.user?.id
   },
-  isLoggedIn: state => state.auth_token !== null && state.user !== null
+  isLoggedIn: state => state.auth_token !== null && state.auth_token !== JSON.stringify(null) && state.user !== null
 }
 const ACTIONS = {
   async registerUser({ commit }, payload) {

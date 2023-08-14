@@ -5,9 +5,9 @@ import HelloWorld from './components/HelloWorld.vue'
 import SessionManager from './components/SessionManager.vue'
 
 const routes = [
-  { path: '/', component: TextbooksPage },
+  { path: '/', component: SessionManager },
   { path: '/hello', component: HelloWorld },
-  { path: '/login', component: SessionManager}
+  { path: '/textbooks', component: TextbooksPage}
 ]
 
 const router = createRouter({
