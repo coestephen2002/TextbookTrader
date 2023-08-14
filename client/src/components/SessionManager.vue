@@ -87,6 +87,7 @@ export default {
       }
       this.loginUser(data)
       this.resetData()
+      
     },
     resetData() {
       this.signUpEmail = ''

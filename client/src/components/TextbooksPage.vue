@@ -15,20 +15,30 @@
     </div>
     <!-- List of Textbooks -->
     <div class="textbooks-list" v-for="textbook in textbooks" :key="textbook.id">
-      <h5>{{ textbook.title }}</h5>
-      <p>{{ textbook.isbn }}</p>
+      <div v-if="textbook.user_id === getUserID">
+        <h5>{{ textbook.title }}</h5>
+        <p>{{ textbook.isbn }}</p>
 
-      <div class="buttons-container">
-        <button @click="editTextbook(textbook.id)">Edit</button>
-        <button @click="deleteTextbook(textbook.id)">Delete</button>
+        <div class="buttons-container">
+          <button @click="editTextbook(textbook.id)">Edit</button>
+          <button @click="deleteTextbook(textbook.id)">Delete</button>
+        </div>
       </div>
+    </div>
+
+    <div class="textbooks-header">
+      <h1>User</h1>
+      <p>User id is: {{ getUserEmail }}</p>
     </div>
   </b-container>
 </template>
 
-<script setup>
+<script>
 import { ref, onMounted } from 'vue'
+import { mapGetters } from 'vuex'
+
 const textbooks = ref([])
+const user_id = ref(this.userId())
 
 const title = ref('')
 const isbn = ref('')
@@ -49,7 +59,8 @@ const createTextbook = async() => {
     },
     body: JSON.stringify({
       title: title.value,
-      isbn: isbn.value
+      isbn: isbn.value,
+      user_id: user_id.value
     })
   })
 
@@ -111,6 +122,15 @@ const editTextbook = async(id) => {
     top: 0,
     behavior: 'smooth'
   })
+}
+
+export default {
+  computed: {
+    ...mapGetters('sessionManager', ['getUserID']),
+    userId() {
+      return this.getUserID
+    }
+  }
 }
 </script>
 
