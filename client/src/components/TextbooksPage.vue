@@ -1,5 +1,5 @@
 <template>
-  <b-container id="textbooks-page">
+  <div v-if="getUserID !== null" id="textbooks-page" class="container">
     <div class="textbooks-header">
       <h1>Textbooks</h1>
     </div>
@@ -8,20 +8,20 @@
       <input type="text" v-model="isbn" placeholder="ISBN" class="isbn-input" />
 
       <div class="buttons-container">
-        <button v-if="isEditing" @click="updateTextbook">Update</button>
+        <button v-if="isEditing" @click="onUpdate">Update</button>
         <button v-if="isEditing" @click="cancelEdit">Cancel</button>
-        <button v-else @click="createTextbook">Create</button>
+        <button v-else @click="onCreate">Create</button>
       </div>
     </div>
     <!-- List of Textbooks -->
-    <div class="textbooks-list" v-for="textbook in textbooks" :key="textbook.id">
+    <div class="textbooks-list" v-for="textbook in getTextbooks" :key="textbook.id">
       <div v-if="textbook.user_id === getUserID">
         <h5>{{ textbook.title }}</h5>
         <p>{{ textbook.isbn }}</p>
 
         <div class="buttons-container">
           <button @click="editTextbook(textbook.id)">Edit</button>
-          <button @click="deleteTextbook(textbook.id)">Delete</button>
+          <button @click="onDelete(textbook.id)">Delete</button>
         </div>
       </div>
     </div>
@@ -30,23 +30,27 @@
       <h1>User</h1>
       <p>User id is: {{ getUserID }}</p>
     </div>
-  </b-container>
+  </div>
+  <div v-else class="container text-center">
+    <h1>Nothing to see here...</h1>
+    <br>
+    <router-link to="/" class="text-decoration-none ">
+      <h2>Login!</h2>
+  </router-link>
+  </div>
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue'
-import { mapGetters } from 'vuex'
-
-const API_URL = 'http://localhost:3000/textbooks'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'TextbooksPage',
   computed: {
-    ... mapGetters('sessionManager', ['getUserID']),
+    ...mapGetters('sessionManager', ['getUserID']),
+    ...mapGetters('textbooksManager', ['getTextbooks'])
   },
   async mounted() {
-    const res = await fetch(API_URL)
-    this.textbooks = await res.json()
+    this.refreshTextbooks()
   },
   data() {
     return {
@@ -58,48 +62,37 @@ export default {
     }
   }, 
   methods: {
-    async createTextbook() {
-        const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+    ...mapActions('textbooksManager', ['createTextbook', 'updateTextbook', 'deleteTextbook']),
+    async onCreate() {
+      let data = {
+        textbook: {
           title: this.title,
           isbn: this.isbn,
           user_id: this.getUserID
-        })
-      })
-
-      const data = await res.json()
-
-      this.textbooks.push(data)
+        }
+      }
+      await this.createTextbook(data)
+      
       this.title = ''
       this.isbn = ''
       this.textbook_id = 0
+      this.refreshTextbooks()
     },
-    async updateTextbook() {
-      const res = await fetch(`${API_URL}/${this.textbook_id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          title: title,
-          isbn: isbn,
-          id: textbook_id
-        })
-      })
-
-      const data = await res.json()
-
-      const index = this.textbooks.findIndex(textbook => textbook.id === data.id)
-      this.textbooks[index] = data
+    async onUpdate() {
+      let data = {
+        textbook: {
+          title: this.title,
+          isbn: this.isbn,
+          id: this.textbook_id
+        }
+      }
+      await this.updateTextbook(data)
 
       this.title = ''
       this.isbn = ''
       this.textbook_id = 0
       this.isEditing = false
+      this.refreshTextbooks()
     },
     cancelEdit() {
       this.title = ''
@@ -107,11 +100,9 @@ export default {
       this.textbook_id = 0
       this.isEditing = false
     },
-    async deleteTextbook(id) {
-      await fetch (`${API_URL}/${id}`, {
-        method: 'DELETE'
-      })
-      this.textbooks = this.textbooks.filter(post => post.id !== id)
+    async onDelete(id) {
+      await this.deleteTextbook(id)
+      this.refreshTextbooks()
     },
     async editTextbook(id) {
       const textbook = this.textbooks.find(post => post.id === id)
@@ -121,11 +112,16 @@ export default {
       this.textbook_id = textbook.id
       this.isEditing = true
 
+      this.refreshTextbooks()
+
       window.scrollTo({
         top: 0,
         behavior: 'smooth'
       })
     },
+    async refreshTextbooks() {
+      this.textbooks = this.getTextbooks
+    }
   },
 }
 </script>

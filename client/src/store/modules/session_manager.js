@@ -1,4 +1,5 @@
 import axios from 'axios'
+import router from '../../router.js'
 
 const BASE_URL = 'http://localhost:3000/'
 
@@ -61,6 +62,7 @@ const ACTIONS = {
       console.error('Logout error:', error)
       throw error
     }
+    router.push({ path: '/' })
   },  
   async loginUserWithToken({ commit }, payload) {
     const config = {

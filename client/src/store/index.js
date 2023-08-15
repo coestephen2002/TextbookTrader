@@ -1,14 +1,14 @@
 import { createStore } from 'vuex'
 import sessionManager from '../store/modules/session_manager'
-//import createPersistedState from 'vuex-persistedstate'
+import textbooksManager from '../store/modules/textbooks_manager'
 
 const MODULES = {
-  sessionManager,
+  sessionManager: sessionManager,
+  textbooksManager: textbooksManager,
 }
 
 const store = createStore({ 
   modules: MODULES,
-  //plugins: [createPersistedState()]
 })
 
 export default store
