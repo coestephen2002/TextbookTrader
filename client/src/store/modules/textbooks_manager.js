@@ -1,15 +1,23 @@
 import axios from 'axios'
 
 const API_URL = 'http://localhost:3000/textbooks/'
-const res = await fetch(API_URL)
-const payload = await res.json()
+
+var res = await fetch(API_URL)
+const textbooks_data = await res.json()
+
+res = await fetch(`${API_URL}explore`)
+const textbooks_with_user_data = await res.json()
 
 const STATE = {
-  textbooks: payload
+  textbooks: textbooks_data,
+  textbooks_with_user: textbooks_with_user_data
 }
 const GETTERS = {
   getTextbooks(state) {
     return state.textbooks
+  },
+  getTextbooksWithUser(state) {
+    return state.textbooks_with_user
   }
 }
 const ACTIONS = {
@@ -54,16 +62,25 @@ const ACTIONS = {
   },  
 }
 const MUTATIONS = {
-  createTextbookMutation(state, data) {
+  async createTextbookMutation(state, data) {
     state.textbooks.push(data.data)
+    res = await fetch(`${API_URL}explore`)
+    const response = await res.json()
+    state.textbooks_with_user = response
   },
-  updateTextbookMutation(state, data) {
+  async updateTextbookMutation(state, data) {
     console.log(data.data)
     const index = state.textbooks.findIndex(textbook => textbook.id === data.data.id)
     state.textbooks[index] = data.data
+    res = await fetch(`${API_URL}explore`)
+    const response = await res.json()
+    state.textbooks_with_user = response
   },
-  deleteTextbookMutation(state, id) {
+  async deleteTextbookMutation(state, id) {
     state.textbooks = state.textbooks.filter(textbook => textbook.id !== id)
+    res = await fetch(`${API_URL}explore`)
+    const response = await res.json()
+    state.textbooks_with_user = response
   }
 }
 export default {

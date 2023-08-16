@@ -38,6 +38,12 @@ class TextbooksController < ApplicationController
     @textbook.destroy
   end
 
+  def explore
+    @textbooks_with_users = ActiveRecord::Base.connection.execute("SELECT textbooks.*, users.email FROM textbooks JOIN users ON textbooks.user_id = users.id")
+
+    render json: @textbooks_with_users
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_textbook

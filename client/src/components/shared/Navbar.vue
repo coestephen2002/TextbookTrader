@@ -8,13 +8,13 @@
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <router-link to="hello">
-            <button>Home</button>
+          <router-link to="/textbooks">
+            <button>My Textbooks</button>
           </router-link>
         </li>
         <li class="nav-item">
-          <router-link to="/textbooks">
-            <button>Textbooks</button>
+          <router-link to="/explore-textbooks">
+            <button>Explore Textbooks</button>
           </router-link>
         </li>
         <li v-if="getUserID === null" class="nav-item">

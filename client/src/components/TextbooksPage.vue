@@ -1,7 +1,7 @@
 <template>
   <div v-if="getUserID !== null" id="textbooks-page" class="container">
     <div class="textbooks-header">
-      <h1>Textbooks</h1>
+      <h1>My Textbooks</h1>
     </div>
     <div class="textbooks-fields">
       <input type="text" v-model="title" placeholder="Title" class="title-input" />
@@ -14,21 +14,19 @@
       </div>
     </div>
     <!-- List of Textbooks -->
-    <div class="textbooks-list" v-for="textbook in getTextbooks" :key="textbook.id">
-      <div v-if="textbook.user_id === getUserID">
-        <h5>{{ textbook.title }}</h5>
-        <p>{{ textbook.isbn }}</p>
+    <div style="margin: 10px;" class="textbooks-list" v-for="textbook in getTextbooks" :key="textbook.id">
+      <div class="border" v-if="textbook.user_id === getUserID">
+        <br>
+        <label class="textbooks-label">Title: </label> <span> &nbsp;"{{ textbook.title }}"</span> <br>
+        <label class="textbooks-label">ISBN: </label> <span> &nbsp;{{ textbook.isbn }}</span> <br>
+        <br>
 
-        <div class="buttons-container">
+        <div style="margin-bottom: 10px" class="buttons-container">
           <button @click="editTextbook(textbook.id)">Edit</button>
           <button @click="onDelete(textbook.id)">Delete</button>
+          
         </div>
       </div>
-    </div>
-
-    <div class="textbooks-header">
-      <h1>User</h1>
-      <p>User id is: {{ getUserID }}</p>
     </div>
   </div>
   <div v-else class="container text-center">
@@ -145,5 +143,8 @@ export default {
   color: #111;
   border-radius: 4px;
   resize: vertical;
+}
+.textbooks-label {
+  font-weight: bold;
 }
 </style>
