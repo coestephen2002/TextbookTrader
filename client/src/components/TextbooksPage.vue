@@ -1,116 +1,126 @@
 <template>
-  <b-container id="textbooks-page">
+  <div v-if="getUserID !== null" id="textbooks-page" class="container">
     <div class="textbooks-header">
-      <h1>Textbooks</h1>
+      <h1>My Textbooks</h1>
     </div>
     <div class="textbooks-fields">
       <input type="text" v-model="title" placeholder="Title" class="title-input" />
       <input type="text" v-model="isbn" placeholder="ISBN" class="isbn-input" />
 
       <div class="buttons-container">
-        <button v-if="isEditing" @click="updateTextbook">Update</button>
+        <button v-if="isEditing" @click="onUpdate">Update</button>
         <button v-if="isEditing" @click="cancelEdit">Cancel</button>
-        <button v-else @click="createTextbook">Create</button>
+        <button v-else @click="onCreate">Create</button>
       </div>
     </div>
     <!-- List of Textbooks -->
-    <div class="textbooks-list" v-for="textbook in textbooks" :key="textbook.id">
-      <h5>{{ textbook.title }}</h5>
-      <p>{{ textbook.isbn }}</p>
+    <div style="margin: 10px;" class="textbooks-list" v-for="textbook in getTextbooks" :key="textbook.id">
+      <div class="border" v-if="textbook.user_id === getUserID">
+        <br>
+        <label class="textbooks-label">Title: </label> <span> &nbsp;"{{ textbook.title }}"</span> <br>
+        <label class="textbooks-label">ISBN: </label> <span> &nbsp;{{ textbook.isbn }}</span> <br>
+        <br>
 
-      <div class="buttons-container">
-        <button @click="editTextbook(textbook.id)">Edit</button>
-        <button @click="deleteTextbook(textbook.id)">Delete</button>
+        <div style="margin-bottom: 10px" class="buttons-container">
+          <button @click="editTextbook(textbook.id)">Edit</button>
+          <button @click="onDelete(textbook.id)">Delete</button>
+          
+        </div>
       </div>
     </div>
-  </b-container>
+  </div>
+  <div v-else class="container text-center">
+    <h1>Nothing to see here...</h1>
+    <br>
+    <router-link to="/" class="text-decoration-none ">
+      <h2>Login!</h2>
+  </router-link>
+  </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
-const textbooks = ref([])
+<script>
+import { mapActions, mapGetters } from 'vuex'
 
-const title = ref('')
-const isbn = ref('')
-const textbook_id = ref(0)
-const isEditing = ref(false)
-const API_URL = 'http://localhost:3000/textbooks'
-
-onMounted(async() => {
-  const res = await fetch(API_URL)
-  textbooks.value = await res.json()
-})
-
-const createTextbook = async() => {
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
+export default {
+  name: 'TextbooksPage',
+  computed: {
+    ...mapGetters('sessionManager', ['getUserID']),
+    ...mapGetters('textbooksManager', ['getTextbooks'])
+  },
+  async mounted() {
+    this.refreshTextbooks()
+  },
+  data() {
+    return {
+      title: '',
+      isbn: '',
+      textbook_id: 0,
+      isEditing: false,
+      textbooks: []
+    }
+  }, 
+  methods: {
+    ...mapActions('textbooksManager', ['createTextbook', 'updateTextbook', 'deleteTextbook']),
+    async onCreate() {
+      let data = {
+        textbook: {
+          title: this.title,
+          isbn: this.isbn,
+          user_id: this.getUserID
+        }
+      }
+      await this.createTextbook(data)
+      
+      this.title = ''
+      this.isbn = ''
+      this.textbook_id = 0
+      this.refreshTextbooks()
     },
-    body: JSON.stringify({
-      title: title.value,
-      isbn: isbn.value
-    })
-  })
+    async onUpdate() {
+      let data = {
+        textbook: {
+          title: this.title,
+          isbn: this.isbn,
+          id: this.textbook_id
+        }
+      }
+      await this.updateTextbook(data)
 
-  const data = await res.json()
-
-  textbooks.value.push(data)
-  title.value = ''
-  isbn.value = ''
-  textbook_id.value = 0
-}
-
-const updateTextbook = async() => {
-  const res = await fetch(`${API_URL}/${textbook_id.value}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json'
+      this.title = ''
+      this.isbn = ''
+      this.textbook_id = 0
+      this.isEditing = false
+      this.refreshTextbooks()
     },
-    body: JSON.stringify({
-      title: title.value,
-      isbn: isbn.value,
-      id: textbook_id.value
-    })
-  })
+    cancelEdit() {
+      this.title = ''
+      this.isbn = ''
+      this.textbook_id = 0
+      this.isEditing = false
+    },
+    async onDelete(id) {
+      await this.deleteTextbook(id)
+      this.refreshTextbooks()
+    },
+    async editTextbook(id) {
+      const textbook = this.textbooks.find(post => post.id === id)
+      
+      this.title = textbook.title
+      this.isbn = textbook.isbn
+      this.textbook_id = textbook.id
+      this.isEditing = true
 
-  const data = await res.json()
+      this.refreshTextbooks()
 
-  const index = textbooks.value.findIndex(textbook => textbook.id === data.id)
-  textbooks.value[index] = data
-
-  title.value = ''
-  isbn.value = ''
-  textbook_id.value = 0
-  isEditing.value = false
-}
-
-const cancelEdit = () => {
-  title.value = ''
-  isbn.value = ''
-  textbook_id.value = 0
-  isEditing.value = false
-}
-
-const deleteTextbook = async(id) => {
-  await fetch (`${API_URL}/${id}`, {
-    method: 'DELETE'
-  })
-  textbooks.value = textbooks.value.filter(post => post.id !== id)
-}
-
-const editTextbook = async(id) => {
-  const textbook = textbooks.value.find(post => post.id === id)
-  
-  title.value = textbook.title
-  isbn.value = textbook.isbn
-  textbook_id.value = textbook.id
-  isEditing.value = true
-
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  })
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+    },
+    async refreshTextbooks() {
+      this.textbooks = this.getTextbooks
+    }
+  },
 }
 </script>
 
@@ -133,5 +143,8 @@ const editTextbook = async(id) => {
   color: #111;
   border-radius: 4px;
   resize: vertical;
+}
+.textbooks-label {
+  font-weight: bold;
 }
 </style>

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import router from '../../router.js'
 
 const BASE_URL = 'http://localhost:3000/'
 
@@ -20,7 +21,7 @@ const GETTERS = {
   getUserID(state) {
     return state.user?.id
   },
-  isLoggedIn: state => state.auth_token !== null && state.user !== null
+  isLoggedIn: state => state.auth_token !== null && state.auth_token !== JSON.stringify(null) && state.user !== null
 }
 const ACTIONS = {
   async registerUser({ commit }, payload) {
@@ -61,6 +62,7 @@ const ACTIONS = {
       console.error('Logout error:', error)
       throw error
     }
+    router.push({ path: '/' })
   },  
   async loginUserWithToken({ commit }, payload) {
     const config = {

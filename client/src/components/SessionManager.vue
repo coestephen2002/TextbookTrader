@@ -87,6 +87,7 @@ export default {
       }
       this.loginUser(data)
       this.resetData()
+      this.$router.push({ path: '/textbooks' })
     },
     resetData() {
       this.signUpEmail = ''
