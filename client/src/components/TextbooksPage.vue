@@ -5,7 +5,7 @@
     </div>
     <div class="textbooks-fields">
       <input type="text" v-model="title" placeholder="Title" class="title-input" />
-      <input type="text" v-model="isbn" placeholder="ISBN" class="isbn-input" />
+      <input type="number" v-model="isbn" placeholder="ISBN 13" class="isbn-input" />
 
       <div class="buttons-container">
         <button v-if="isEditing" @click="onUpdate">Update</button>
@@ -62,35 +62,39 @@ export default {
   methods: {
     ...mapActions('textbooksManager', ['createTextbook', 'updateTextbook', 'deleteTextbook']),
     async onCreate() {
-      let data = {
-        textbook: {
-          title: this.title,
-          isbn: this.isbn,
-          user_id: this.getUserID
+      if (this.validate()) {
+        let data = {
+          textbook: {
+            title: this.title,
+            isbn: this.isbn,
+            user_id: this.getUserID
+          }
         }
+        await this.createTextbook(data)
+        
+        this.title = ''
+        this.isbn = ''
+        this.textbook_id = 0
+        this.refreshTextbooks()
       }
-      await this.createTextbook(data)
-      
-      this.title = ''
-      this.isbn = ''
-      this.textbook_id = 0
-      this.refreshTextbooks()
     },
     async onUpdate() {
-      let data = {
-        textbook: {
-          title: this.title,
-          isbn: this.isbn,
-          id: this.textbook_id
+      if (this.validate()) {
+        let data = {
+          textbook: {
+            title: this.title,
+            isbn: this.isbn,
+            id: this.textbook_id
+          }
         }
-      }
-      await this.updateTextbook(data)
+        await this.updateTextbook(data)
 
-      this.title = ''
-      this.isbn = ''
-      this.textbook_id = 0
-      this.isEditing = false
-      this.refreshTextbooks()
+        this.title = ''
+        this.isbn = ''
+        this.textbook_id = 0
+        this.isEditing = false
+        this.refreshTextbooks()
+      }
     },
     cancelEdit() {
       this.title = ''
@@ -119,6 +123,20 @@ export default {
     },
     async refreshTextbooks() {
       this.textbooks = this.getTextbooks
+    },
+    validate() {
+      console.log(this.title)
+      console.log(this.isbn)
+      var result = true
+      if (!this.title) {
+        result = false
+        this.$swal('Title cannot be empty')
+      }
+      if (!this.isbn || this.isbn.toString().length !== 13) {
+        result = false
+        this.$swal('ISBN must be a number with length 13')
+      }
+      return result;
     }
   },
 }

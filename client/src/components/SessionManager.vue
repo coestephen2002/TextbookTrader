@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1 class="sm-title">Vue Session Manager</h1>
+    <h1 class="sm-title">Textbook Trader</h1>
     <div class="sm-card">
       <div v-if="isLoggedIn">
         <button @click="logoutUser" class="logout-button">Logout</button>
@@ -24,9 +24,12 @@
       <div v-else>
         <h3>Sign Up!</h3>
         <form @submit="onSignUp" class="sign-up-form">
+          <br/>
           <input type="email" class="sign-up-form-email" v-model="signUpEmail" placeholder="Email" />
           <br/>
+          <br/>
           <input type="password" class="sign-up-form-password" v-model="signUpPassword" placeholder="Password" />
+          <br/>
           <br/>
           <input type="submit" value="Sign Up" class="sign-up-form-submit" />
         </form>
@@ -35,9 +38,12 @@
         <br />
         <h3>Login!</h3>
         <form @submit="onLogin" class="login-form">
+          <br/>
           <input type="email" class="login-form-email" v-model="loginEmail" placeholder="Email" />
           <br/>
+          <br/>
           <input type="password" class="login-form-password" v-model="loginPassword" placeholder="Password" />
+          <br/>
           <br/>
           <input type="submit" value="Login" class="login-form-submit" />
         </form>
@@ -107,7 +113,8 @@ export default {
   font-size: 2.5rem;
   font-weight: bold;
   text-align: center;
-  font-family: "Roboto", sans-serif;
+  font-family: "Lucida Handwriting", cursive;
+  padding-bottom: 10px;
 }
 .container {
   width: 90%;
@@ -117,7 +124,6 @@ export default {
   width: 75%;
   padding: 20px;
   margin: 0 auto;
-  height: 25em;
   border-radius: 10px;
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
 }
