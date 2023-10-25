@@ -9,18 +9,22 @@
           <button @click="searchTextbooks">Search</button>
           <button @click="clearSearch">Clear</button>
         </div>
+        <br>
+        <span> <label class="textbooks-label">Only show textbooks at my University: &nbsp; </label><input type="checkbox" v-model="filterByUniversity" class="filter-checkbox"/> </span>
       </div>
       <br><br>
     </div>
     <!-- List of Textbooks -->
     <div v-for="textbook in getTextbooksWithUser" :key="textbook.id">
-      <div class="border" v-if="textbook.user_id !== getUserID && textbook.title.toLowerCase().includes(filterParam.toLowerCase())">
+      <div class="border" v-if="textbook.user_id !== getUserID && textbook.title.toLowerCase().includes(filterParam.toLowerCase()) && universityFilter(textbook.universityName)">
         <br>
         <label class="textbooks-label">Title: </label> <span> &nbsp;"{{ textbook.title }}"</span> <br>
         <label class="textbooks-label">ISBN: </label> <span> &nbsp;{{ textbook.isbn }}</span> <br>
+        <label class="textbooks-label">University: </label> <span> &nbsp;{{ textbook.universityName }}</span> <br>
         <label class="textbooks-label">Contact: </label> <span> &nbsp;{{ textbook.email }}</span> <br>
         <br>
       </div>
+      <br>
     </div>
   </div>
 </template>
@@ -31,13 +35,15 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'TextbooksPage',
   computed: {
-    ...mapGetters('sessionManager', ['getUserID']),
-    ...mapGetters('textbooksManager', ['getTextbooksWithUser'])
+    ...mapGetters('sessionManager', ['getUserID', 'getUserUniversityID']),
+    ...mapGetters('textbooksManager', ['getTextbooksWithUser']),
+    ...mapGetters('universityManager', ['getUniversities'])
   },
   data() {
     return {
       searchText: '',
-      filterParam: ''
+      filterParam: '',
+      filterByUniversity: false,
     }
   },
   methods: {
@@ -47,6 +53,15 @@ export default {
     clearSearch() {
       this.searchText = ''
       this.filterParam = ''
+    },
+    universityFilter(universityName) {
+      var result = true;
+      console.log(this.getUserUniversityID)
+      if(this.filterByUniversity) {
+        var university = this.getUniversities.filter((data) => data.id == this.getUserUniversityID)[0]
+        result = university.name === universityName
+      }
+      return result;
     }
   },
 }
@@ -74,5 +89,11 @@ export default {
 }
 .textbooks-label {
   font-weight: bold;
+}
+.span-centered {
+  vertical-align: middle;
+}
+.filter-checkbox {
+  vertical-align: middle;
 }
 </style>

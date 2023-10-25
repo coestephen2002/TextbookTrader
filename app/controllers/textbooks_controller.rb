@@ -39,7 +39,7 @@ class TextbooksController < ApplicationController
   end
 
   def explore
-    @textbooks_with_users = ActiveRecord::Base.connection.execute("SELECT textbooks.*, users.email FROM textbooks JOIN users ON textbooks.user_id = users.id")
+    @textbooks_with_users = ActiveRecord::Base.connection.execute("SELECT textbooks.*, users.email, universities.name as universityName FROM textbooks JOIN users ON textbooks.user_id = users.id JOIN universities ON users.university_id = universities.id")
 
     render json: @textbooks_with_users
   end

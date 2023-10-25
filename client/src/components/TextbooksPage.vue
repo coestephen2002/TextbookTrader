@@ -10,8 +10,9 @@
       <div class="buttons-container">
         <button v-if="isEditing" @click="onUpdate">Update</button>
         <button v-if="isEditing" @click="cancelEdit">Cancel</button>
-        <button v-else @click="onCreate">Create</button>
+        <button style="width: 80px" v-else @click="onCreate">Add</button>
       </div>
+      <br>
     </div>
     <!-- List of Textbooks -->
     <div style="margin: 10px;" class="textbooks-list" v-for="textbook in getTextbooks" :key="textbook.id">
