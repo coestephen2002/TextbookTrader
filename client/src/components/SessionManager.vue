@@ -31,7 +31,16 @@
           <input type="password" class="sign-up-form-password" v-model="signUpPassword" placeholder="Password" />
           <br/>
           <br/>
+          <input type="text" id="universityTextbox" class="sign-up-form-password" v-model="signUpUniversity" @focus="universityFocused = true" @blur="universityFocused = false" placeholder="University" />
+          <div class="border university-list" v-if="signUpUniversity !== '' && universityFocused">
+            <div v-for="university in getUniversities" :key="university.id">
+              <button type="button" @mousedown="setUniversity(university)" class="university-list-button" v-if="university.name.toLowerCase().startsWith(signUpUniversity.toLowerCase())">{{ university.name }}</button>
+            </div>
+          </div>
+          <br>
+          <br>
           <input type="submit" value="Sign Up" class="sign-up-form-submit" />
+          <br>
         </form>
 
         <hr />
@@ -58,32 +67,56 @@ export default {
   name: 'SessionManager',
   computed: {
     ...mapGetters('sessionManager', ['getAuthToken', 'getUserEmail', 'getUserID', 'isLoggedIn']),
+    ...mapGetters('universityManager', ['getUniversities'])
   },
   async mounted() {
-
+    
   },
   data() {
     return {
       signUpEmail: '',
       signUpPassword: '',
+      signUpUniversity: '',
       loginEmail: '',
       loginPassword: '',
+      universityFocused: false,
+      universityId: -1,
     }
   },
   methods: {
-    ...mapActions('sessionManager', ['registerUser', 'loginUser', 'logoutUser']),
-    onSignUp(event) {
+    ...mapActions('sessionManager', ['registerUser', 'loginUser', 'logoutUser', 'addUniversity']),
+    async onSignUp(event) {
       event.preventDefault()
+      if (this.universityId === -1) {
+        var res = this.getUniversities.filter((data) => data.name === this.signUpUniversity)
+
+        if (res.length == 0) {
+          this.$swal('Must enter a valid University!')
+          return
+        }
+        
+        this.universityId = res[0].id
+      }
       let data = {
         user: {
           email: this.signUpEmail,
           password: this.signUpPassword,
         },
       }
-      this.registerUser(data)
+      await this.registerUser(data)
+      let universityData = {
+        user: {
+          id: this.getUserID,
+          university_id: this.universityId,
+        }
+      }
+      this.addUniversity(universityData)
       this.resetData()
+      if(this.getUserID !== null) {
+        this.$router.push({ path: '/textbooks' })
+      }
     },
-    onLogin(event) {
+    async onLogin(event) {
       event.preventDefault()
       let data = {
         user: {
@@ -91,16 +124,29 @@ export default {
           password: this.loginPassword
         },
       }
-      this.loginUser(data)
       this.resetData()
-      this.$router.push({ path: '/textbooks' })
+      try {
+        await this.loginUser(data)
+      }
+      catch {
+        this.$swal('Wrong Username or Password')
+      }
+      if(this.getUserID !== null) {
+        this.$router.push({ path: '/textbooks' })
+      }
     },
     resetData() {
       this.signUpEmail = ''
       this.signUpPassword = ''
+      this.signUpUniversity = ''
+      this.universityId = -1
       this.loginEmail = ''
       this.loginPassword = ''
     },
+    setUniversity(university) {
+      this.signUpUniversity = university.name
+      this.universityId = university.id
+    }
   },
 }
 
@@ -217,5 +263,17 @@ export default {
 }
 .table-row-username {
   width: 30%;
+}
+.university-list {
+  z-index: 999;
+  border-radius: 5px;
+  width: 25%;
+  max-height: 400px;
+  overflow-y: scroll;
+  position: absolute;
+}
+.university-list-button {
+  width: 100%;
+  text-align: left;
 }
 </style>

@@ -5,4 +5,5 @@ class User < ApplicationRecord
          :jwt_authenticatable,
          jwt_revocation_strategy: JwtDenylist
   has_many :textbooks, dependent: :destroy
+  belongs_to :university, optional: true
 end

@@ -8,7 +8,8 @@ const STATE = {
   user: {
     id: null,
     username: null,
-    email: null
+    email: null,
+    university_id: null,
   },
 }
 const GETTERS = {
@@ -21,11 +22,14 @@ const GETTERS = {
   getUserID(state) {
     return state.user?.id
   },
+  getUserUniversityID(state) {
+    return state.user?.university_id
+  },
   isLoggedIn: state => state.auth_token !== null && state.auth_token !== JSON.stringify(null) && state.user !== null
 }
 const ACTIONS = {
   async registerUser({ commit }, payload) {
-    return new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
       axios
         .post(`${BASE_URL}users`, payload)
         .then((response) => {
@@ -37,8 +41,22 @@ const ACTIONS = {
         })
     })
   },
+  async addUniversity({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      axios
+        .patch(`${BASE_URL}user/${payload.user.id}`, payload)
+        .then((response) => {
+          commit('setUserUniversity', response)
+          resolve(response)
+        })
+        .catch((error) => {
+          reject(error)
+        })
+    })
+  },
   async loginUser({ commit }, payload) {
-    new Promise((resolve, reject) => {
+    console.log(payload)
+    await new Promise((resolve, reject) => {
       axios
         .post(`${BASE_URL}users/sign_in`, payload)
         .then((response) => {
@@ -89,6 +107,9 @@ const MUTATIONS = {
     state.auth_token = data.headers.authorization
     axios.defaults.headers.common['Authorization'] = data.headers.authorization
     localStorage.setItem('auth_token', data.headers.authorization)
+  },
+  setUserUniversity(state, data) {
+    state.user.university_id = data.data.user.university_id
   },
   setUserInfoFromToken(state, data) {
     state.user = data.data.user
