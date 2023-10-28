@@ -1,7 +1,9 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Textbook Trader</a>
+    <a class="navbar-brand" href="#"> 
+      <img class="logo" src="../../../images/textbooks-v2.jpeg" alt="Logo" />
+    </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -17,7 +19,7 @@
             <button>Explore Textbooks</button>
           </router-link>
         </li>
-        <li v-if="getUserID === null" class="nav-item">
+        <li v-if="!isLoggedIn" class="nav-item">
           <router-link to="/">
             <button>Login</button>
           </router-link>
@@ -34,10 +36,18 @@
 import { mapActions, mapGetters } from 'vuex'
 export default {
   computed: {
-    ...mapGetters('sessionManager', ['getUserID'])
+    ...mapGetters('sessionManager', ['getUserID', 'isLoggedIn'])
   },
   methods: {
     ...mapActions('sessionManager', ['logoutUser']),
   }
 }
 </script>
+
+<style>
+.logo {
+  height: 50px;
+  border-radius: 35%;
+  margin-left: 10px;
+}
+</style>

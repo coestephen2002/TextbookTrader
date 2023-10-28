@@ -10,7 +10,7 @@
           <button @click="clearSearch">Clear</button>
         </div>
         <br>
-        <span> <label class="textbooks-label">Only show textbooks at my University: &nbsp; </label><input type="checkbox" v-model="filterByUniversity" class="filter-checkbox"/> </span>
+        <span v-if="isLoggedIn"> <label class="textbooks-label">Only show textbooks at my University: &nbsp; </label><input type="checkbox" v-model="filterByUniversity" class="filter-checkbox"/> </span>
       </div>
       <br><br>
     </div>
@@ -35,7 +35,7 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'TextbooksPage',
   computed: {
-    ...mapGetters('sessionManager', ['getUserID', 'getUserUniversityID']),
+    ...mapGetters('sessionManager', ['getUserID', 'getUserUniversityID', 'isLoggedIn']),
     ...mapGetters('textbooksManager', ['getTextbooksWithUser']),
     ...mapGetters('universityManager', ['getUniversities'])
   },
@@ -59,7 +59,9 @@ export default {
       console.log(this.getUserUniversityID)
       if(this.filterByUniversity) {
         var university = this.getUniversities.filter((data) => data.id == this.getUserUniversityID)[0]
-        result = university.name === universityName
+        if(university) {
+          result = university.name === universityName
+        }
       }
       return result;
     }
@@ -95,5 +97,10 @@ export default {
 }
 .filter-checkbox {
   vertical-align: middle;
+}
+.big {
+  height: 100vh;
+  width: 100vw;
+  background-color: blue;
 }
 </style>
