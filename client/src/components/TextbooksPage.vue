@@ -1,5 +1,5 @@
 <template>
-  <div v-if="getUserID !== null" id="textbooks-page" class="container">
+  <div v-if="isLoggedIn" id="textbooks-page" class="container">
     <div class="textbooks-header">
       <h1>My Textbooks</h1>
     </div>
@@ -45,7 +45,7 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'TextbooksPage',
   computed: {
-    ...mapGetters('sessionManager', ['getUserID']),
+    ...mapGetters('sessionManager', ['getUserID', 'isLoggedIn']),
     ...mapGetters('textbooksManager', ['getTextbooks'])
   },
   async mounted() {
