@@ -1,0 +1,14 @@
+version: "3"
+services:
+  db:
+    image: "postgres:16"
+    container_name: "textbooktrader_postgres"
+    environment:
+      POSTGRES_PASSWORD: "test"
+    ports:
+      - 54320:5432
+    volumes:
+      - data:/var/lib/postgresql/data
+volumes: 
+  data:
+    
